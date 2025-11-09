@@ -15,6 +15,7 @@ import numpy as np
 def load_data():
     df = pd.read_csv('snu_friendship.csv')
     columns = ['Hobby_top1', 'Hobby top2', 'Club top1', 'Club top 2', 'Teamwork preference  \n ']
+    df.columns = columns
     df_selected = df[columns].dropna()
     return df_selected
 
