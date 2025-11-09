@@ -15,6 +15,15 @@ import numpy as np
 def load_data():
     df = pd.read_csv('snu_friendship.csv')
     columns = ['Hobby_top1', 'Hobby top2', 'Club top1', 'Club top 2', 'Teamwork preference  \n ']
+    # Rename columns to match expected names
+    column_mapping = {
+        'Hobby_top1': 'Hobby_top1',
+        'Hobby top2': 'Hobby top2',
+        'Club top1': 'Club top1',
+        'Club top 2': 'Club top 2',
+        'Teamwork preference  \n ': 'Teamwork preference  \n '
+    }
+    df.rename(columns=column_mapping, inplace=True)
     df_selected = df[columns].dropna()
     return df_selected
 
