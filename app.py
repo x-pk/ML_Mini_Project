@@ -149,6 +149,64 @@ def main():
         st.write(f"**Average Teamwork Preference:** {avg_teamwork:.2f}")
         st.write("---")
 
+    # Visualizations Section
+    st.header("📊 Visualizations")
+
+    # Bar Chart of Cluster Sizes
+    st.subheader("📈 Cluster Sizes")
+    fig, ax = plt.subplots(figsize=(8, 5))
+    cluster_sizes = [cluster_counts[cluster] for cluster in sorted(cluster_counts.keys())]
+    club_names = [club_nicknames.get(cluster, f"Club {cluster}") for cluster in sorted(cluster_counts.keys())]
+    colors = plt.cm.tab10.colors[:len(cluster_sizes)]
+    ax.bar(club_names, cluster_sizes, color=colors)
+    ax.set_xlabel('Clubs')
+    ax.set_ylabel('Number of Students')
+    ax.set_title('Number of Students per Club')
+    ax.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.xticks(rotation=45, ha='right')
+    st.pyplot(fig)
+
+    # Pie Chart of Cluster Distribution
+    st.subheader("🥧 Cluster Distribution")
+    fig, ax = plt.subplots(figsize=(6, 6))
+    ax.pie(cluster_sizes, labels=club_names, autopct='%1.1f%%', startangle=140, colors=colors)
+    ax.set_title('Distribution of Students Across Clubs')
+    ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+    st.pyplot(fig)
+
+    # PCA Scatter Plot
+    st.subheader("🔍 PCA Scatter Plot of Clusters")
+    pca = PCA(n_components=2)
+    pca_data = pca.fit_transform(encoded_data)
+    fig, ax = plt.subplots(figsize=(8, 6))
+    scatter = ax.scatter(pca_data[:, 0], pca_data[:, 1], c=clusters, cmap='tab10', alpha=0.7)
+    ax.set_xlabel('PCA Component 1')
+    ax.set_ylabel('PCA Component 2')
+    ax.set_title('2D PCA Visualization of Student Clusters')
+    ax.grid(True, linestyle='--', alpha=0.5)
+    # Create custom legend with club names
+    unique_clusters = sorted(set(clusters))
+    legend_elements = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=plt.cm.tab10(i), markersize=10, label=club_nicknames.get(i, f"Club {i}")) for i in unique_clusters]
+    ax.legend(handles=legend_elements, title="Clubs")
+    st.pyplot(fig)
+
+    # Bar Charts for Top Hobbies per Cluster
+    st.subheader("🎨 Top Hobbies per Cluster")
+    for cluster in sorted(cluster_counts.keys()):
+        nickname = club_nicknames.get(cluster, f"Club {cluster}")
+        st.markdown(f"**{nickname}**")
+        cluster_data = df_selected[df_selected['Cluster'] == cluster]
+        all_hobbies = pd.concat([cluster_data['Hobby_top1'], cluster_data['Hobby top2']])
+        hobby_counts = all_hobbies.value_counts().head(5)
+        fig, ax = plt.subplots(figsize=(8, 4))
+        hobby_counts.plot(kind='bar', ax=ax, color=plt.cm.tab10.colors[cluster % 10])
+        ax.set_xlabel('Hobbies')
+        ax.set_ylabel('Frequency')
+        ax.set_title(f'Top 5 Hobbies in {nickname}')
+        ax.grid(axis='y', linestyle='--', alpha=0.7)
+        plt.xticks(rotation=45, ha='right')
+        st.pyplot(fig)
+
     st.markdown("---")
     st.markdown("Built with ❤️ using Streamlit and Machine Learning")
 
